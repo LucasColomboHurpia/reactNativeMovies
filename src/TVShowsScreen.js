@@ -10,7 +10,7 @@ const MoviesScreen = () => {
     const [searchType, setSearchType] = useState('airingToday');
     const [refresh, setRefresh] = useState(false);
 
-    let API_KEY = 'b0bb4c8d5e0c7614ef42e57f4887dff0';
+    let API_KEY = '';
 
     const fetchMovies = () => {
         let url = '';
