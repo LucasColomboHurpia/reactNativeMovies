@@ -11,7 +11,7 @@ const MoviesScreen = () => {
     const [refresh, setRefresh] = useState(false);
     const [error, setError] = useState(''); // Add this line to track the error
 
-    let API_KEY = 'b0bb4c8d5e0c7614ef42e57f4887dff0';
+    let API_KEY = '';
 
     const fetchMovies = () => {
         // Add validation here
