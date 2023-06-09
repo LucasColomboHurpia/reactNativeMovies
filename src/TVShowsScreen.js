@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
@@ -9,12 +9,19 @@ const MoviesScreen = () => {
     const [search, setSearch] = useState('');
     const [searchType, setSearchType] = useState('airingToday');
     const [refresh, setRefresh] = useState(false);
+    const [error, setError] = useState(''); // Add this line to track the error
 
     let API_KEY = 'b0bb4c8d5e0c7614ef42e57f4887dff0';
 
     const fetchMovies = () => {
+        // Add validation here
+        if (search.trim() === '') {
+            setError('Search field cannot be empty');
+            return;
+        }
+        setError(''); // Clear the error if it exists
+
         let url = '';
-        console.log("TV show clicked")
         switch (searchType) {
             case 'airingToday':
                 url = `https://api.themoviedb.org/3/tv/airing_today?api_key=${API_KEY}&query=${search}`;
@@ -35,28 +42,33 @@ const MoviesScreen = () => {
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                console.log(data.results[0]);
                 setMovies(data.results);
                 setRefresh(!refresh);
             })
             .catch(error => console.log(error));
     }
 
-
     const filteredMovies = movies.filter(movie =>
         movie.name && movie.name.toLowerCase().includes(search.toLowerCase())
     );
-    
+
     return (
         <View style={styles.container}>
-            <Text>Search TV Show Name:</Text>
+            <Text>
+                Search TV Show Name: 
+                <Text style={styles.required}>*</Text>
+            </Text>
             <TextInput
                 style={styles.searchBar}
                 onChangeText={text => setSearch(text)}
                 value={search}
                 placeholder="Search..."
             />
-            <Text style={styles.label}>Choose Search Type</Text>
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+            <Text style={styles.label}>
+                Choose Search Type
+                <Text style={styles.required}>*</Text>
+            </Text>
             <View style={styles.row}>
                 <Picker
                     selectedValue={searchType}
@@ -68,8 +80,10 @@ const MoviesScreen = () => {
                     <Picker.Item label="Popular" value="popular" />
                     <Picker.Item label="Top Rated" value="topRated" />
                 </Picker>
-
-                <Button title="Search" onPress={fetchMovies} />
+                <Button 
+                    title="Search" 
+                    onPress={fetchMovies} 
+                />
             </View>
             <FlatList
                 data={filteredMovies}
@@ -104,6 +118,12 @@ const styles = StyleSheet.create({
     },
     picker: {
         flex: 1,
+    },
+    error: {
+        color: 'red',
+    },
+    required: {
+        color: 'red',
     },
 });
 

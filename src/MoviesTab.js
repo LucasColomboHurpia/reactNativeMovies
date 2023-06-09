@@ -9,24 +9,34 @@ const MoviesScreen = () => {
   const [search, setSearch] = useState('');
   const [searchType, setSearchType] = useState('nowPlaying');
   const [refresh, setRefresh] = useState(false);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(''); // Add this line to track the error
 
   let API_KEY = 'b0bb4c8d5e0c7614ef42e57f4887dff0';
 
   const fetchMovies = () => {
-    console.log('clicked');
+    // Add validation here
+    if (search.trim() === '') {
+      setError('Search field cannot be empty');
+      return;
+    }
+    setError(''); // Clear the error if it exists
+
+    setLoading(true);
     let url = '';
     switch (searchType) {
       case 'nowPlaying':
-        url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}`;
+        url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&page=${page}`;
         break;
       case 'popular':
-        url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`;
+        url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${page}`;
         break;
       case 'topRated':
-        url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}`;
+        url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&page=${page}`;
         break;
       case 'upcoming':
-        url = `https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}`;
+        url = `https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&page=${page}`;
         break;
       default:
         return;
@@ -35,29 +45,43 @@ const MoviesScreen = () => {
     fetch(url)
       .then(response => response.json())
       .then(data => {
-        console.log(data.results[0]);
-        setMovies(data.results);
-        setRefresh(!refresh);
+        setMovies(prevMovies => [...prevMovies, ...data.results]);
+        setPage(prevPage => prevPage + 1);
+        setLoading(false);
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        setLoading(false);
+      });
   }
 
+  const loadMore = () => {
+    if (!loading) {
+        fetchMovies();
+    }
+  }
 
   const filteredMovies = movies.filter(movie =>
     movie.title && movie.title.toLowerCase().includes(search.toLowerCase())
   );
-  
 
   return (
     <View style={styles.container}>
-        <Text>Search Movie Name:</Text>
+        <Text>
+          Search Movie Name: 
+          <Text style={styles.required}>*</Text>
+        </Text>
       <TextInput
         style={styles.searchBar}
         onChangeText={text => setSearch(text)}
         value={search}
         placeholder="Search..."
       />
-      <Text style={styles.label}>Choose Search Type</Text>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+      <Text style={styles.label}>
+        Choose Search Type
+        <Text style={styles.required}>*</Text>
+      </Text>
       <View style={styles.row}>
         <Picker
           selectedValue={searchType}
@@ -69,13 +93,18 @@ const MoviesScreen = () => {
           <Picker.Item label="Top Rated" value="topRated" />
           <Picker.Item label="Upcoming" value="upcoming" />
         </Picker>
-        <Button title="Search" onPress={fetchMovies} />
+        <Button 
+          title="Search" 
+          onPress={fetchMovies} 
+        />
       </View>
       <FlatList
         data={filteredMovies}
         extraData={refresh}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <MovieItem item={item} />}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.1}
         />
     </View>
   );
@@ -104,6 +133,12 @@ const styles = StyleSheet.create({
   },
   picker: {
     flex: 1,
+  },
+  error: {
+    color: 'red',
+  },
+  required: {
+    color: 'red',
   },
 });
 

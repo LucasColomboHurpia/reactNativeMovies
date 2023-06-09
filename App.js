@@ -41,8 +41,8 @@ export default function App() {
           <Stack.Screen
             name="Detail"
             component={DetailScreen}
-            options={({ route }) => ({ title: route.params.item.title ? route.params.item.title : route.params.item.name })}
           />
+
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
