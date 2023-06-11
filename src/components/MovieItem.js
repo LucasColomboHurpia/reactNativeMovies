@@ -1,14 +1,11 @@
 import React from 'react';
 import { View, Text, Image, Button, StyleSheet, Dimensions } from 'react-native';
-
 import { useNavigation } from '@react-navigation/native';
 
 const MovieItem = ({ item }) => {
   const navigation = useNavigation();
 
-  // Check if 'movie' and 'movie.poster_path' is defined before trying to access it
   const imgSrc = item && item.poster_path ? { uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` } : null;
-
 
   return (
     <View style={styles.movieItem}>
@@ -28,10 +25,9 @@ const MovieItem = ({ item }) => {
           {item.release_date ? `Release Date: ${item.release_date}` : `First Aired: ${item.first_air_date}`}
         </Text>
 
-        {/* {item.original_language ? <Text>Original Language: {item.original_language}</Text> : null} */}
-        {/* <Text>Overview: {item.overview}</Text> */}
         <Button
           title="More Details"
+          style={styles.buttonDetails}
           onPress={() => {
             const mediaType = item.first_air_date ? 'tv' : 'movie';
             navigation.navigate('Detail', { movie_id: item.id, mediaType: mediaType })
@@ -45,8 +41,9 @@ const MovieItem = ({ item }) => {
 const styles = StyleSheet.create({
   movieItem: {
     flexDirection: 'row',
-    padding: 10,
-    height: 200,
+    alignItems: 'center',
+    padding: 15,
+    height: 190,
     width: Dimensions.get('window').width,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
@@ -58,15 +55,15 @@ const styles = StyleSheet.create({
   },
   movieDetails: {
     flex: 1,
-    flexGrow: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
   },
-
   movieTitle: {
     fontSize: 18,
     marginBottom: 10,
   },
-
+  buttonDetails:{
+    borderRadius: '15px',
+  }
 });
 
 export default MovieItem;

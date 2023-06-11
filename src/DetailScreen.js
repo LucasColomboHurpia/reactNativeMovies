@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const DetailScreen = ({ route }) => {
     const { movie_id, mediaType } = route.params; // Grab the mediaType from route.params
-    const API_KEY = 'b0bb4c8d5e0c7614ef42e57f4887dff0';
+    const API_KEY = '';
 
     const navigation = useNavigation();
 

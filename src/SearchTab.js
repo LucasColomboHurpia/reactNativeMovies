@@ -53,14 +53,14 @@ const SearchScreen = () => {
   return (
     <View style={styles.container}>
       <Text>
-        Search TV Show Name: 
+        Search Movie/TV Show Name: 
         <Text style={styles.required}>*</Text>
       </Text>
       <TextInput
         style={styles.searchBar}
         onChangeText={text => setSearch(text)}
         value={search}
-        placeholder="Search..."
+        placeholder="i.e. James Bond, CSI"
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Text style={styles.label}>
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     width: '100%',
+    padding: 12,
   },
   label: {
     marginTop: 10,
